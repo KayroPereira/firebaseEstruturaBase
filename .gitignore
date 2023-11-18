@@ -1,2 +1,6 @@
-/firebaseEstruturaBasica/
-firebaseFunctions.h	
+/firebaseEstruturaBasica/Release/
+
+# Arquivos de configuração do Eclipse
+.settings/
+
+/firebaseEstruturaBasica/firebaseFunctions.h
