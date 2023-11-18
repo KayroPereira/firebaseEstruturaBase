@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "PingUtils.h"
 //#include <ESP8266WiFi.h>
-#include <FirebaseESP8266.h>
+//#include <FirebaseESP8266.h>
 
 //// Provide the token generation process info.
 //#include <addons/TokenHelper.h>
@@ -37,11 +37,11 @@ extern bool getFlgRegDelayPing();
 extern void setFlgRegDelayPing(bool value);
 extern bool pingOK();
 extern void startCheckHealthConnection();
-extern void firebaseConfiguration();
 
 //firebaseFunction
+extern void firebaseConfiguration();
 extern void beginStreamCallback();
-extern void removeStreamCallback();
+//extern void removeStreamCallback();
 
 void healthConnection();
 

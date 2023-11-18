@@ -1,5 +1,8 @@
 #include "PingUtils.h"
 
+//TODO - Remover
+#include "Arduino.h"
+
 // Set global to avoid object removing after setup() routine
 Pinger pinger;
 
@@ -13,18 +16,24 @@ void pingerReceive(){
 		pingBusy = false;
 //	    statusPing = response.ReceivedResponse;
 
+
 	    if (response.ReceivedResponse){
-	    	if(!statusPing){
-	    		statusPing = true;
-				stateChange = true;
-			}
+	    	statusPing = true;
+			stateChange = true;
+//	    	if(!statusPing){
+//	    		statusPing = true;
+//				stateChange = true;
+//			}
 	    }else{
-	    	if(statusPing){
-	    		statusPing = false;
-				stateChange = true;
-			}
+	    	statusPing = false;
+			stateChange = true;
+//	    	if(statusPing){
+//	    		statusPing = false;
+//				stateChange = true;
+//			}
 	    }
 
+		Serial.printf("\n\n####### statusPing: %s -> stateChange: %s -> pingBusy: %s\n", statusPing ? "true" : "false", stateChange ? "true" : "false", pingBusy ? "true" : "false");
 	    // Return true to continue the ping sequence.
 	    // If current event returns false, the ping sequence is interrupted.
 	    return true;
@@ -33,6 +42,7 @@ void pingerReceive(){
 
 void pingerEnd(){
 	pinger.OnEnd([](const PingerResponse& response){
+		Serial.printf("\n\n ***************** pingBusy: %s\n", pingBusy ? "true" : "false");
 	    return true;
 	});
 }

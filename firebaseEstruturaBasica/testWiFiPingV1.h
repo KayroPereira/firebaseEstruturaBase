@@ -4,7 +4,7 @@
 
 //#include "commons.h"
 #include "accessHardware.h"
-#include "connection.h"
+//#include "connection.h"
 //#include "PingUtils.h"
 
 //#define RELOAD_CONT 100
@@ -23,5 +23,8 @@ extern void communicationBoot();
 extern bool getConnectionHealth();
 extern void setConnectionHealth(bool value);
 extern void startCheckHealthConnection();
+
+//firebaseFunctions
+extern void sendDataFirebase();
 
 #endif /* _testWiFiPingV1_H_ */

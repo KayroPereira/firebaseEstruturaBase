@@ -6,18 +6,19 @@ bool initializationOk = false;
 bool connectionHealth = false;
 bool checkHealthConnection = false;
 bool flgFirstBootAttempt = false;
+bool flgFirebaseConfigured = false;
 
 void initializeHardware(){
 	Serial.println("-------------- initializeHardware ------------");
 
 	timer1Configuration();
 
+	communicationBoot();
+
 	pingerReceive();
 	pingerEnd();
 
-	firebaseConfiguration();
-
-	communicationBoot();
+//	firebaseConfiguration();
 
 	flgFirstBootAttempt = true;
 
@@ -44,19 +45,29 @@ void communicationBoot(){
 		wifiInitialize();
 	}
 
-	if(!stationConnected){
+	if(stationInitialized && !stationConnected){
 		if(!flgFirstBootAttempt){
 			connectWifi();
 		}else{
-			connectWifi(3);
+			connectWifi(5);
 		}
 	}
 
-	if(!connectionHealth){
+	if(stationConnected && !connectionHealth){
+//		delay(1000);
+//		pingerReceive();
+//		pingerEnd();
+//		delay(1000);
+
 		startCheckHealthConnection();
 	}
 
 	initializationOk = (stationInitialized && stationConnected && getConnectionHealth());
+
+	if(initializationOk && !flgFirebaseConfigured){
+		firebaseConfiguration();
+		flgFirebaseConfigured = true;
+	}
 
 	Serial.printf("\ninitializationOk: %s\n", initializationOk ? "true" : "false");
 }
@@ -64,17 +75,17 @@ void communicationBoot(){
 void systemInformation(){
 
 	// Ping default gateway
-	Serial.printf("\n\nPinging default gateway with IP %s\n", WiFi.gatewayIP().toString().c_str());
-	if(pinger.Ping(WiFi.gatewayIP()) == false){
-		Serial.println("Error during last ping command.");
-	}
-
-	Serial.println();
-	Serial.print("Connected with IP: ");
-	Serial.println(WiFi.localIP());
-	Serial.println();
-
-	Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+//	Serial.printf("\n\nPinging default gateway with IP %s\n", WiFi.gatewayIP().toString().c_str());
+//	if(pinger.Ping(WiFi.gatewayIP()) == false){
+//		Serial.println("Error during last ping command.");
+//	}
+//
+//	Serial.println();
+//	Serial.print("Connected with IP: ");
+//	Serial.println(WiFi.localIP());
+//	Serial.println();
+//
+//	Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
 }
 
 //TODO - Remover
@@ -100,26 +111,32 @@ void healthConnection(){
 
 	Serial.println("\n-------------- healthConnection ------------");
 
-
-	if(stateChange && statusPing){
-		setConnectionHealth(true);
-		stateChange = false;
-		beginStreamCallback();
-	}else if(stateChange && !statusPing){
-		setConnectionHealth(false);
-		stateChange = false;
-		removeStreamCallback();
-	}
-
-	if(!getPingBusy() && !getConnectionHealth()){
-		pingOK();
-	}
-
 	Serial.print("Ping ok: ");
 	Serial.print((statusPing ? "true -> " : "false -> "));
 	Serial.println(contPing++);
 	Serial.print("stateChange ok: ");
 	Serial.println((stateChange ? "true -> " : "false -> "));
+
+	if(stateChange && statusPing){
+		setConnectionHealth(true);
+		stateChange = false;
+
+		//TODO - Verificar necessidade
+//		firebaseConfiguration();
+
+		beginStreamCallback();
+	}else if(stateChange && !statusPing){
+		setConnectionHealth(false);
+		stateChange = false;
+//		removeStreamCallback();
+	}
+
+	Serial.printf("\n\n getPingBusy: %s -> getConnectionHealth: %s\n", getPingBusy() ? "true" : "false", getConnectionHealth() ? "true" : "false");
+
+	if(!getPingBusy() && !getConnectionHealth()){
+		pingOK();
+	}
+
 }
 
 

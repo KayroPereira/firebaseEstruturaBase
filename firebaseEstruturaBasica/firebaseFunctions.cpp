@@ -37,17 +37,23 @@ void streamTimeoutCallback(bool timeout) {
 void beginStreamCallback(){
 	Serial.println("-------------- beginStreamCallback ------------");
 
-	if (!Firebase.beginStream(stream, "/test/stream/data")) {
-	  Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
-	}else{
-		Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
-	}
+//	if (!Firebase.beginStream(stream, "/test/stream/data")) {
+//	  Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
+////	  removeStreamCallback();
+//	}
+////	else{
+////		Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
+////	}
+//	//TODO - verificar
+//	Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
 }
 
 void removeStreamCallback(){
 	Serial.println("-------------- removeStreamCallback ------------");
 
-	Firebase.removeStreamCallback(stream);
+//	Firebase.endStream(stream);
+
+//	Firebase.removeStreamCallback(stream);
 	setConnectionHealth(false);
 }
 
@@ -76,22 +82,45 @@ void firebaseConfiguration(){
 	#if defined(ESP8266)
 		stream.setBSSLBufferSize(2048 /* Rx in bytes, 512 - 16384 */, 512 /* Tx in bytes, 512 - 16384 */);
 	#endif
+
+	if (!Firebase.beginStream(stream, "/test/stream/data")) {
+		Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
+	}
+	//	else{
+	//		Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
+	//	}
+	//TODO - verificar
+	Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
+
+	Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
 }
 
 //TODO - Remover
 unsigned long sendDataPrevMillis = 0;
 int count = 0;
 
-void fhadskjlfa(){
+void sendDataFirebase(){
 	if (getConnectionHealth() && (Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))) {
 		Serial.println("<---------------------- Get Firebase ------------------------>");
+		Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
+
 		delay(1000);
 		sendDataPrevMillis = millis();
 		count++;
 		FirebaseJson json;
 		json.add("data", "hello");
 		json.add("num", count);
-		Serial.printf("Set json... %s\n\n", Firebase.setJSON(fbdo, "/test/stream/data/json", json) ? "ok" : fbdo.errorReason().c_str());
+//		Serial.printf("Set json... %s\n\n", Firebase.setJSON(fbdo, "/test/stream/data/json", json) ? "ok" : fbdo.errorReason().c_str());
+
+		Serial.println("\n\nBefore send");
+
+		if(!Firebase.setJSON(fbdo, "/test/stream/data/json", json)){
+			Serial.println("\nErro send");
+			removeStreamCallback();
+			Serial.printf("\nSet json... %s\n\n", fbdo.errorReason().c_str());
+		}else{
+			Serial.printf("\nSet json... %s\n\n", "ok\n");
+		}
 	}
 
 	if (dataChanged) {

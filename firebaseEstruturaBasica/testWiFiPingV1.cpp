@@ -74,7 +74,7 @@ void variableInitialize(){
 void setup(){
 
 	// Begin serial connection at 9600 baud
-	Serial.begin(9600);
+	Serial.begin(115200);
 	Serial.println("\n\nInicializando....");
 
 	delay(2000);
@@ -153,7 +153,7 @@ void setup(){
 }
 
 //unsigned long sendDataPrevMillis = 0;
-//long sendDataPrevMillis1 = millis();
+long sendDataPrevMillis1 = millis();
 //long sendDataPrevMillis2 = millis();
 
 
@@ -162,10 +162,22 @@ void loop(){
 	if(!initializationOk){
 		communicationBoot();
 	}else{
+		if (millis() - sendDataPrevMillis1 > 100){
+			digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+			sendDataPrevMillis1 = millis();
+		}
 
 		if(!getConnectionHealth()){
 			startCheckHealthConnection();
 		}else{
+
+
+			sendDataFirebase();
+
+
+
+
+
 //			//		connectWifi(3);
 //			// Ping default gateway
 //			if((millis() - sendDataPrevMillis > 1500 || sendDataPrevMillis == 0)){
