@@ -55,15 +55,15 @@ void communicationBoot(){
 	}
 
 	if(getStationConnected() && !connectionHealth){
-
-		systemInformation();
-
 		startCheckHealthConnection();
 	}
 
 	initializationOk = (getStationInitialized() && getStationConnected() && getConnectionHealth());
 
 	if(initializationOk && !flgFirebaseConfigured){
+
+		systemInformation();
+
 		firebaseConfiguration();
 		flgFirebaseConfigured = true;
 	}
@@ -103,20 +103,22 @@ int contPing = 0;
 
 void healthConnection(){
 
-	if(contPing % 10 == 0)
-		println("\n-------------- healthConnection ------------");
-
-	if(getStateChange()){
-		print("Ping ok: ");
-		print((getStatusPing() ? "true -> " : "false -> "));
-		println(contPing++);
-		print("stateChange ok: ");
-		println((getStateChange() ? "true -> " : "false -> "));
-	}
+//	if(contPing % 10 == 0)
+//		println("\n-------------- healthConnection ------------");
+//
+//	if(getStateChange()){
+//		print("Ping ok: ");
+//		print((getStatusPing() ? "true -> " : "false -> "));
+//		println(contPing++);
+//		print("stateChange ok: ");
+//		println((getStateChange() ? "true -> " : "false -> "));
+//	}
 
 	if(getStateChange() && getStatusPing()){
 		setConnectionHealth(true);
 		setStateChange(false);
+
+		starStreamCallback();
 
 		//TODO - Verificar necessidade
 //		firebaseConfiguration();
@@ -128,9 +130,9 @@ void healthConnection(){
 //		removeStreamCallback();
 	}
 
-	if(getStateChange()){
-		Serial.printf("\n\n getPingBusy: %s -> getConnectionHealth: %s\n", getPingBusy() ? "true" : "false", getConnectionHealth() ? "true" : "false");
-	}
+//	if(getStateChange()){
+//		Serial.printf("\n\n getPingBusy: %s -> getConnectionHealth: %s\n", getPingBusy() ? "true" : "false", getConnectionHealth() ? "true" : "false");
+//	}
 
 	if(!getPingBusy() && !getConnectionHealth()){
 		pingOK();

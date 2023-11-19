@@ -36,8 +36,24 @@ void streamTimeoutCallback(bool timeout) {
 	}
 }
 
+void starStreamCallback(){
+	println("-------------- starStreamCallback ------------");
+
+	if (!Firebase.beginStream(stream, "/test/stream/data")) {
+			Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
+		}
+
+		Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
+
+		delayMilliSeconds(2000);
+		Serial.printf("starStreamCallback ** token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
+}
+
 void stopStreamCallback(){
 	println("-------------- stopStreamCallback ------------");
+
+	Firebase.removeStreamCallback(stream);
+	delayMilliSeconds(2000);
 
 	setConnectionHealth(false);
 }
@@ -68,13 +84,14 @@ void firebaseConfiguration(){
 		stream.setBSSLBufferSize(2048 /* Rx in bytes, 512 - 16384 */, 512 /* Tx in bytes, 512 - 16384 */);
 	#endif
 
-	if (!Firebase.beginStream(stream, "/test/stream/data")) {
-		Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
-	}
-
-	Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
-
-	Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
+	starStreamCallback();
+//	if (!Firebase.beginStream(stream, "/test/stream/data")) {
+//		Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
+//	}
+//
+//	Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
+//
+//	Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
 }
 
 //TODO - Remover
@@ -82,7 +99,14 @@ unsigned long sendDataPrevMillis = 0;
 int count = 0;
 
 void sendDataFirebase(){
-	if (getConnectionHealth() && (Firebase.ready() && (getMillis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))) {
+	bool firebaseOK = Firebase.ready();
+
+	if(getConnectionHealth() && !firebaseOK){
+		println("Firebase NOK **************");
+		stopStreamCallback();
+	}
+
+	if (getConnectionHealth() && (firebaseOK && (getMillis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))) {
 		println("<---------------------- Get Firebase ------------------------>");
 		Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
 

@@ -13,7 +13,7 @@ bool pingBusy = false;
 void pingerReceive(){
 	pinger.OnReceive([](const PingerResponse& response){
 
-		pingBusy = false;
+//		pingBusy = false;
 	    statusPing = response.ReceivedResponse;
 
 		stateChange = true;
@@ -27,6 +27,7 @@ void pingerReceive(){
 
 void pingerEnd(){
 	pinger.OnEnd([](const PingerResponse& response){
+		pingBusy = false;
 		Serial.printf("\n\n ***************** pingBusy: %s\n", pingBusy ? "true" : "false");
 	    return true;
 	});

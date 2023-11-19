@@ -6,7 +6,7 @@
 //#include <ESP8266WiFi.h>
 #include <FirebaseESP8266.h>
 
-#define DELAY_TRY_COMMUNICATION			2000
+#define DELAY_TRY_COMMUNICATION			5000
 
 //connection
 extern void connectWifi();
@@ -55,7 +55,7 @@ extern bool getPingBusy();
 extern bool getStatusPing();
 extern bool getStateChange();
 extern void setStateChange(bool value);
-//extern void beginStreamCallback();
+extern void starStreamCallback();
 extern void firebaseConfiguration();
 
 
