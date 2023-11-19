@@ -4,20 +4,22 @@
 
 #include "Arduino.h"
 
-#define RELOAD_CONT 5
+#define RELOAD_CONT 		5
 
 //Declara constantes
 const int BASE_TIME = 8000;
 const int DIVISOR_TIMER = 256;
 
+//interruption
 extern void reloadRegDelayPing();
 extern void timer1Configuration();
 extern bool getStartPing();
 extern void setStartPing(bool value);
 extern bool getFlgRegDelayPing();
 extern void setFlgRegDelayPing(bool value);
+
+//accessHardware
 extern bool getCheckHealthConnection();
 extern void healthConnection();
-
 
 #endif /* INTERRUPTION_H_ */

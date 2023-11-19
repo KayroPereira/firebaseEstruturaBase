@@ -1,23 +1,21 @@
 #include "interruption.h"
 
-//int count = 0;
 int regDelayPing;
 
 bool startPing = true;
 bool flgRegDelayPing = false;
 
 void timerInterrupt(){
-//	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 
 	if(getFlgRegDelayPing() && !--regDelayPing){
 		reloadRegDelayPing();
 	    setStartPing(true);
 	}
 
-	if(getCheckHealthConnection() && getStartPing()){
-		setStartPing(false);
-		healthConnection();
-	}
+//	if(getCheckHealthConnection() && getStartPing()){
+//		setStartPing(false);
+//		healthConnection();
+//	}
 }
 
 void timer1Configuration(){

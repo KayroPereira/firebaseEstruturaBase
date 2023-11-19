@@ -17,50 +17,35 @@ void streamCallback(StreamData data) {
 				data.dataType().c_str(),
 				data.eventType().c_str());
 	printResult(data); // see addons/RTDBHelper.h
-	Serial.println();
 
-	Serial.printf("Received stream payload size: %d (Max. %d)\n\n", data.payloadLength(), data.maxPayloadLength());
+	Serial.printf("\n\nReceived stream payload size: %d (Max. %d)\n\n", data.payloadLength(), data.maxPayloadLength());
 
 	dataChanged = true;
 }
 
 void streamTimeoutCallback(bool timeout) {
-	if (!stream.httpConnected())
-	  Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
+	if(getConnectionHealth()){
+		println("Entrou &&&&&&&&&&&&&&&&&&&&");
+		if (!stream.httpConnected())
+		  Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
 
-	if (timeout) {
-		Serial.println("stream timed out, resuming...\n");
-		removeStreamCallback();
+		if (timeout) {
+			println("stream timed out, resuming...\n");
+			stopStreamCallback();
+		}
 	}
 }
 
-void beginStreamCallback(){
-	Serial.println("-------------- beginStreamCallback ------------");
+void stopStreamCallback(){
+	println("-------------- stopStreamCallback ------------");
 
-//	if (!Firebase.beginStream(stream, "/test/stream/data")) {
-//	  Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
-////	  removeStreamCallback();
-//	}
-////	else{
-////		Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
-////	}
-//	//TODO - verificar
-//	Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
-}
-
-void removeStreamCallback(){
-	Serial.println("-------------- removeStreamCallback ------------");
-
-//	Firebase.endStream(stream);
-
-//	Firebase.removeStreamCallback(stream);
 	setConnectionHealth(false);
 }
 
 
 void firebaseConfiguration(){
 
-	Serial.println("-------------- firebaseConfiguration ------------");
+	println("-------------- firebaseConfiguration ------------");
 
 	/* Assign the api key (required) */
 	config.api_key = API_KEY;
@@ -86,10 +71,7 @@ void firebaseConfiguration(){
 	if (!Firebase.beginStream(stream, "/test/stream/data")) {
 		Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
 	}
-	//	else{
-	//		Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
-	//	}
-	//TODO - verificar
+
 	Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
 
 	Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
@@ -100,12 +82,12 @@ unsigned long sendDataPrevMillis = 0;
 int count = 0;
 
 void sendDataFirebase(){
-	if (getConnectionHealth() && (Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))) {
-		Serial.println("<---------------------- Get Firebase ------------------------>");
+	if (getConnectionHealth() && (Firebase.ready() && (getMillis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))) {
+		println("<---------------------- Get Firebase ------------------------>");
 		Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
 
-		delay(1000);
-		sendDataPrevMillis = millis();
+		delayMilliSeconds(1000);
+		sendDataPrevMillis = getMillis();
 		count++;
 		FirebaseJson json;
 		json.add("data", "hello");
@@ -115,8 +97,8 @@ void sendDataFirebase(){
 		Serial.println("\n\nBefore send");
 
 		if(!Firebase.setJSON(fbdo, "/test/stream/data/json", json)){
-			Serial.println("\nErro send");
-			removeStreamCallback();
+			println("\nErro send");
+			stopStreamCallback();
 			Serial.printf("\nSet json... %s\n\n", fbdo.errorReason().c_str());
 		}else{
 			Serial.printf("\nSet json... %s\n\n", "ok\n");

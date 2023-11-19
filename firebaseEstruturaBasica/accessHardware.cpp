@@ -1,7 +1,8 @@
 #include "accessHardware.h"
 
+unsigned long delayTryCommunication = getMillis();
 
-//TODO - converter para flagsd
+//TODO - converter para flags
 bool initializationOk = false;
 bool connectionHealth = false;
 bool checkHealthConnection = false;
@@ -9,7 +10,8 @@ bool flgFirstBootAttempt = false;
 bool flgFirebaseConfigured = false;
 
 void initializeHardware(){
-	Serial.println("-------------- initializeHardware ------------");
+
+	println("-------------- initializeHardware ------------");
 
 	timer1Configuration();
 
@@ -22,6 +24,8 @@ void initializeHardware(){
 
 	flgFirstBootAttempt = true;
 
+	pinConfiguration(LED_BUILTIN, OUTPUT);
+
 //	wifiInitialize();
 //
 //	if(stationInitialized){
@@ -29,23 +33,20 @@ void initializeHardware(){
 //	}
 }
 
-unsigned long delayTryCommunication = millis();
-#define DELAY_TRY_COMMUNICATION			2000
-
 void communicationBoot(){
 
-	if((millis() - delayTryCommunication) > DELAY_TRY_COMMUNICATION){
-		Serial.println("\n-------------- communicationBoot ------------");
-		delayTryCommunication = millis();
+	if((getMillis() - delayTryCommunication) > DELAY_TRY_COMMUNICATION){
+		println("\n-------------- communicationBoot ------------");
+		delayTryCommunication = getMillis();
 	}else{
 		return;
 	}
 
-	if(!stationInitialized){
+	if(!getStationInitialized()){
 		wifiInitialize();
 	}
 
-	if(stationInitialized && !stationConnected){
+	if(getStationInitialized() && !getStationConnected()){
 		if(!flgFirstBootAttempt){
 			connectWifi();
 		}else{
@@ -53,16 +54,14 @@ void communicationBoot(){
 		}
 	}
 
-	if(stationConnected && !connectionHealth){
-//		delay(1000);
-//		pingerReceive();
-//		pingerEnd();
-//		delay(1000);
+	if(getStationConnected() && !connectionHealth){
+
+		systemInformation();
 
 		startCheckHealthConnection();
 	}
 
-	initializationOk = (stationInitialized && stationConnected && getConnectionHealth());
+	initializationOk = (getStationInitialized() && getStationConnected() && getConnectionHealth());
 
 	if(initializationOk && !flgFirebaseConfigured){
 		firebaseConfiguration();
@@ -74,26 +73,18 @@ void communicationBoot(){
 
 void systemInformation(){
 
-	// Ping default gateway
-//	Serial.printf("\n\nPinging default gateway with IP %s\n", WiFi.gatewayIP().toString().c_str());
-//	if(pinger.Ping(WiFi.gatewayIP()) == false){
-//		Serial.println("Error during last ping command.");
-//	}
-//
-//	Serial.println();
-//	Serial.print("Connected with IP: ");
-//	Serial.println(WiFi.localIP());
-//	Serial.println();
-//
-//	Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
-}
+	//Ping default gateway
+	Serial.printf("\n\nPinging default gateway with IP %s\n", WiFi.gatewayIP().toString().c_str());
 
-//TODO - Remover
-int contPing = 0;
+	print("\nConnected with IP: ");
+	Serial.println(WiFi.localIP());
+
+	Serial.printf("\n\nFirebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+}
 
 void startCheckHealthConnection(){
 	if(!getFlgRegDelayPing()){
-		Serial.println("-------------- startCheckHealthConnection ------------");
+		println("-------------- startCheckHealthConnection ------------");
 		reloadRegDelayPing();
 		setFlgRegDelayPing(true);
 		setCheckHealthConnection(true);
@@ -101,44 +92,102 @@ void startCheckHealthConnection(){
 }
 
 void stopCheckHealthConnection(){
-	Serial.println("-------------- stopCheckHealthConnection ------------");
+	println("-------------- stopCheckHealthConnection ------------");
 	setFlgRegDelayPing(false);
 	setCheckHealthConnection(false);
 	reloadRegDelayPing();
 }
 
+//TODO - Remover
+int contPing = 0;
+
 void healthConnection(){
 
-	Serial.println("\n-------------- healthConnection ------------");
+	if(contPing % 10 == 0)
+		println("\n-------------- healthConnection ------------");
 
-	Serial.print("Ping ok: ");
-	Serial.print((statusPing ? "true -> " : "false -> "));
-	Serial.println(contPing++);
-	Serial.print("stateChange ok: ");
-	Serial.println((stateChange ? "true -> " : "false -> "));
+	if(getStateChange()){
+		print("Ping ok: ");
+		print((getStatusPing() ? "true -> " : "false -> "));
+		println(contPing++);
+		print("stateChange ok: ");
+		println((getStateChange() ? "true -> " : "false -> "));
+	}
 
-	if(stateChange && statusPing){
+	if(getStateChange() && getStatusPing()){
 		setConnectionHealth(true);
-		stateChange = false;
+		setStateChange(false);
 
 		//TODO - Verificar necessidade
 //		firebaseConfiguration();
 
-		beginStreamCallback();
-	}else if(stateChange && !statusPing){
+//		beginStreamCallback();
+	}else if(getStateChange() && !getStatusPing()){
 		setConnectionHealth(false);
-		stateChange = false;
+		setStateChange(false);
 //		removeStreamCallback();
 	}
 
-	Serial.printf("\n\n getPingBusy: %s -> getConnectionHealth: %s\n", getPingBusy() ? "true" : "false", getConnectionHealth() ? "true" : "false");
+	if(getStateChange()){
+		Serial.printf("\n\n getPingBusy: %s -> getConnectionHealth: %s\n", getPingBusy() ? "true" : "false", getConnectionHealth() ? "true" : "false");
+	}
 
 	if(!getPingBusy() && !getConnectionHealth()){
 		pingOK();
 	}
-
 }
 
+//funções acesso ao hardware
+
+void pinConfiguration(uint8_t pin, uint8_t mode){
+	pinMode(pin, mode);
+}
+
+void pinWrite(uint8_t pin, uint8_t val){
+	digitalWrite(pin, val);
+}
+
+int pinRead(uint8_t pin){
+	return digitalRead(pin);
+}
+
+void setPin(uint8_t pin){
+	pinWrite(pin, HIGH);
+}
+
+void clearPin(uint8_t pin){
+	pinWrite(pin, LOW);
+}
+
+void togglePin(uint8_t pin){
+	pinWrite(pin, !pinRead(pin));
+}
+
+void serialInitialize(unsigned long baud){
+	Serial.begin(baud);
+}
+
+void println(const char c[]){
+	Serial.println(c);
+}
+
+void println(int num){
+    Serial.println(num);
+}
+
+void print(const char c[]){
+	Serial.print(c);
+}
+
+void delayMilliSeconds(unsigned long ms){
+	delay(ms);
+}
+
+unsigned long getMillis(){
+	return millis();
+}
+
+//gets e sets
 
 void setConnectionHealth(bool value){
 	connectionHealth = value;
@@ -160,4 +209,12 @@ bool getCheckHealthConnection(){
 
 void setCheckHealthConnection(bool value){
 	checkHealthConnection = value;
+}
+
+bool getInitializationOk(){
+	return initializationOk;
+}
+
+void setInitializationOk(bool value){
+	initializationOk = value;
 }

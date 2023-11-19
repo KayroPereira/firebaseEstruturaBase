@@ -1,13 +1,10 @@
-
 #ifndef CONNECTION_H_
 #define CONNECTION_H_
-
-//#include "commons.h"
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
 #include "PingUtils.h"
-
+#include "importUtils.h"
 
 /* 1. Define the WiFi credentials */
 #define WIFI_SSID "kWiFiMobile"
@@ -17,16 +14,19 @@
 
 #define MAXIMUM_ATTEMPT_CONNECTION_DEFAULT			15
 
-extern bool stationInitialized;
-extern bool stationConnected;
-extern Pinger pinger;
-
+//connection
 extern void wifiInitialize();
 extern void connectWifi();
 extern void connectWifi(int maximum_attempt);
 extern bool pingOK();
+extern bool getStationInitialized();
+extern void setStationInitialized(bool value);
+extern bool getStationConnected();
+extern void setStationConnected(bool value);
 
-//PingUtils
+//pingUtils
+extern Pinger pinger;
+
 extern void setPingBusy(bool value);
 extern bool getPingBusy();
 

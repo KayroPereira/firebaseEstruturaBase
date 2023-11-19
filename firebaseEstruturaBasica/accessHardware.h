@@ -4,52 +4,59 @@
 #include "Arduino.h"
 #include "PingUtils.h"
 //#include <ESP8266WiFi.h>
-//#include <FirebaseESP8266.h>
+#include <FirebaseESP8266.h>
 
-//// Provide the token generation process info.
-//#include <addons/TokenHelper.h>
-//
-//// Provide the RTDB payload printing info and other helper functions.
-//#include <addons/RTDBHelper.h>
+#define DELAY_TRY_COMMUNICATION			2000
 
-//extern "C"
-//{
-//  #include <lwip/icmp.h> // needed for icmp packet definitions
-//}
+//connection
+extern void connectWifi();
+extern bool pingOK();
+extern void wifiInitialize();
+extern bool getStationInitialized();
+extern bool getStationConnected();
 
-extern bool stationInitialized;
-extern bool stationConnected;
-extern bool initializationOk;
+//accessHardware
+void systemInformation();
 
+extern void serialInitialize(unsigned long baud);
+extern void println(const char c[]);
+extern void println(int num);
+extern void print(const char c[]);
 extern void communicationBoot();
 extern void initializeHardware();
-extern void connectWifi();
 extern void connectWifi(int maximum_attempt);
+extern void startCheckHealthConnection();
+extern void healthConnection();
+extern void delayMilliSeconds(unsigned long ms);
+extern void pinConfiguration(uint8_t pin, uint8_t mode);
+extern unsigned long getMillis();
 extern bool getConnectionHealth();
 extern void setConnectionHealth(bool value);
+extern bool getCheckHealthConnection();
+extern void setCheckHealthConnection(bool value);
+extern bool getInitializationOk();
+extern void setInitializationOk(bool value);
+extern void pinWrite(uint8_t pin, uint8_t val);
+extern int pinRead(uint8_t pin);
+extern void setPin(uint8_t pin);
+extern void clearPin(uint8_t pin);
+extern void togglePin(uint8_t pin);
+
+//interruption
 extern void reloadRegDelayPing();
 extern void timer1Configuration();
 extern void setStartPing(bool value);
 extern bool getStartPing();
-extern bool getCheckHealthConnection();
-extern void setCheckHealthConnection(bool value);
 extern bool getFlgRegDelayPing();
 extern void setFlgRegDelayPing(bool value);
-extern bool pingOK();
-extern void startCheckHealthConnection();
 
 //firebaseFunction
+extern bool getPingBusy();
+extern bool getStatusPing();
+extern bool getStateChange();
+extern void setStateChange(bool value);
+//extern void beginStreamCallback();
 extern void firebaseConfiguration();
-extern void beginStreamCallback();
-//extern void removeStreamCallback();
-
-void healthConnection();
-
-extern void wifiInitialize();
-
-////Declara constantes
-//const int BASE_TIME = 8000;
-//const int DIVISOR_TIMER = 256;
 
 
 #endif /* ACCESSHARDWARE_H_ */

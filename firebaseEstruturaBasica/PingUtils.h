@@ -3,16 +3,17 @@
 
 #include <Pinger.h>
 
+//pingUtils
 extern Pinger pinger;
-extern bool statusPing;
-extern bool stateChange;
 
 void pingerReceive();
 void pingerEnd();
 
-
-//PingUtils
 extern void setPingBusy(bool value);
 extern bool getPingBusy();
+extern bool getStatusPing();
+extern void setStatusPing(bool value);
+extern bool getStateChange();
+extern void setStateChange(bool value);
 
 #endif /* PINGUTILS_H_ */
