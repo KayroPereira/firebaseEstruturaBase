@@ -1,24 +1,25 @@
 #include "PingUtils.h"
 
-//TODO - Remover
-#include "Arduino.h"
-
 // Set global to avoid object removing after setup() routine
 Pinger pinger;
 
-bool statusPing = false;
-bool stateChange = false;
-bool pingBusy = false;
+union{
+	struct{
+		unsigned int statusPing: 1;
+		unsigned int stateChange: 1;
+		unsigned int pingBusy: 1;
+	}flgsPingUtilsBits;
+
+	unsigned int flgsPingUtils;
+}flgsPingUtils;
 
 void pingerReceive(){
 	pinger.OnReceive([](const PingerResponse& response){
 
-//		pingBusy = false;
-	    statusPing = response.ReceivedResponse;
+		flgsPingUtils.flgsPingUtilsBits.statusPing = response.ReceivedResponse;
 
-		stateChange = true;
+		flgsPingUtils.flgsPingUtilsBits.stateChange = true;
 
-		Serial.printf("\n\n####### statusPing: %s -> stateChange: %s -> pingBusy: %s\n", statusPing ? "true" : "false", stateChange ? "true" : "false", pingBusy ? "true" : "false");
 	    // Return true to continue the ping sequence.
 	    // If current event returns false, the ping sequence is interrupted.
 	    return true;
@@ -27,34 +28,37 @@ void pingerReceive(){
 
 void pingerEnd(){
 	pinger.OnEnd([](const PingerResponse& response){
-		pingBusy = false;
-		Serial.printf("\n\n ***************** pingBusy: %s\n", pingBusy ? "true" : "false");
+		flgsPingUtils.flgsPingUtilsBits.pingBusy = false;
 	    return true;
 	});
 }
 
 //gets e sets
 
+void setFlgsPingUtils(unsigned int value){
+	flgsPingUtils.flgsPingUtils = value;
+}
+
 bool getStatusPing(){
-	return statusPing;
+	return flgsPingUtils.flgsPingUtilsBits.statusPing;
 }
 
 void setStatusPing(bool value){
-	statusPing = value;
+	flgsPingUtils.flgsPingUtilsBits.statusPing = value;
 }
 
 bool getStateChange(){
-	return stateChange;
+	return flgsPingUtils.flgsPingUtilsBits.stateChange;
 }
 
 void setStateChange(bool value){
-	stateChange = value;
+	flgsPingUtils.flgsPingUtilsBits.stateChange = value;
 }
 
 void setPingBusy(bool value){
-	pingBusy = value;
+	flgsPingUtils.flgsPingUtilsBits.pingBusy = value;
 }
 
 bool getPingBusy(){
-	return pingBusy;
+	return flgsPingUtils.flgsPingUtilsBits.pingBusy;
 }

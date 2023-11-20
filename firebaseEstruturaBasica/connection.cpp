@@ -1,33 +1,33 @@
 #include "connection.h"
 
-bool stationInitialized = false;
-bool stationConnected = false;
+union{
+	struct{
+		unsigned int stationInitialized: 1;
+		unsigned int stationConnected: 1;
+	}flgsConnectionBits;
+
+	unsigned int flgsConnection;
+}flgsConnection;
 
 void wifiInitialize(){
 
 	WiFi.persistent(false);
 
-	println("-------------- wifiInitialize ------------");
-
 	// Connect to WiFi access point
-	stationInitialized = WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+	flgsConnection.flgsConnectionBits.stationInitialized = WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
 	// Check if connection errors
-	if(!stationInitialized){
+	if(!flgsConnection.flgsConnectionBits.stationInitialized){
 		println("Error, unable to connect specified WiFi network.");
 	}
 }
 
 void connectWifi(){
 
-	println("-------------- connectWifi ------------");
-
 	connectWifi(MAXIMUM_ATTEMPT_CONNECTION_DEFAULT);
 }
 
 void connectWifi(int maximum_attempt){
-
-	println("-------------- connectWifi 2 ------------");
 
 	int currentAttempt = 0;
 
@@ -38,7 +38,7 @@ void connectWifi(int maximum_attempt){
 		print(".");
 	}
 
-	stationConnected = (WiFi.status() == WL_CONNECTED);
+	flgsConnection.flgsConnectionBits.stationConnected = (WiFi.status() == WL_CONNECTED);
 
 	print("\nStatus conexao: ");
 	println(WiFi.status());
@@ -54,18 +54,22 @@ bool pingOK(){
 
 //gets e sets
 
+void setFlgsConnection(unsigned int value){
+	flgsConnection.flgsConnection = value;
+}
+
 bool getStationInitialized(){
-	return stationInitialized;
+	return flgsConnection.flgsConnectionBits.stationInitialized;
 }
 
 void setStationInitialized(bool value){
-	stationInitialized = value;
+	flgsConnection.flgsConnectionBits.stationInitialized = value;
 }
 
 bool getStationConnected(){
-	return stationConnected;
+	return flgsConnection.flgsConnectionBits.stationConnected;
 }
 
 void setStationConnected(bool value){
-	stationConnected = value;
+	flgsConnection.flgsConnectionBits.stationConnected = value;
 }

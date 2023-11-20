@@ -36,6 +36,7 @@ extern bool getCheckHealthConnection();
 extern void setCheckHealthConnection(bool value);
 extern bool getInitializationOk();
 extern void setInitializationOk(bool value);
+extern void setFlgsAccessHardware(unsigned int value);
 extern void pinWrite(uint8_t pin, uint8_t val);
 extern int pinRead(uint8_t pin);
 extern void setPin(uint8_t pin);

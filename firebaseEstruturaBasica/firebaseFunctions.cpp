@@ -25,7 +25,6 @@ void streamCallback(StreamData data) {
 
 void streamTimeoutCallback(bool timeout) {
 	if(getConnectionHealth()){
-		println("Entrou &&&&&&&&&&&&&&&&&&&&");
 		if (!stream.httpConnected())
 		  Serial.printf("error code: %d, reason: %s\n\n", stream.httpCode(), stream.errorReason().c_str());
 
@@ -37,7 +36,6 @@ void streamTimeoutCallback(bool timeout) {
 }
 
 void starStreamCallback(){
-	println("-------------- starStreamCallback ------------");
 
 	if (!Firebase.beginStream(stream, "/test/stream/data")) {
 			Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
@@ -46,13 +44,12 @@ void starStreamCallback(){
 		Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
 
 		delayMilliSeconds(2000);
-		Serial.printf("starStreamCallback ** token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
 }
 
 void stopStreamCallback(){
-	println("-------------- stopStreamCallback ------------");
 
 	Firebase.removeStreamCallback(stream);
+
 	delayMilliSeconds(2000);
 
 	setConnectionHealth(false);
@@ -60,8 +57,6 @@ void stopStreamCallback(){
 
 
 void firebaseConfiguration(){
-
-	println("-------------- firebaseConfiguration ------------");
 
 	/* Assign the api key (required) */
 	config.api_key = API_KEY;
@@ -78,20 +73,38 @@ void firebaseConfiguration(){
 
 	Firebase.begin(&config, &auth);
 
+	//Timeout options.
+
+	// Comment or pass false value when WiFi reconnection will control by your code or third party library
 	Firebase.reconnectWiFi(true);
+
+	//WiFi reconnect timeout (interval) in ms (10 sec - 5 min) when WiFi disconnected.
+	config.timeout.wifiReconnect = 10 * 1000;
+
+	//Socket connection and SSL handshake timeout in ms (1 sec - 1 min).
+	config.timeout.socketConnection = 5 * 1000;
+
+	//Server response read timeout in ms (1 sec - 1 min).
+	config.timeout.serverResponse = 5 * 1000;
+
+	//RTDB Stream keep-alive timeout in ms (20 sec - 2 min) when no server's keep-alive event data received.
+	config.timeout.rtdbKeepAlive = 20 * 1000;
+
+	//RTDB Stream reconnect timeout (interval) in ms (1 sec - 1 min) when RTDB Stream closed and want to resume.
+	config.timeout.rtdbStreamReconnect = 1 * 1000;
+
+	//RTDB Stream error notification timeout (interval) in ms (3 sec - 30 sec). It determines how often the readStream
+	//will return false (error) when it called repeatedly in loop.
+	config.timeout.rtdbStreamError = 3 * 1000;
+
+	//You can also set the TCP data sending retry with
+	config.tcp_data_sending_retry = 1;
 
 	#if defined(ESP8266)
 		stream.setBSSLBufferSize(2048 /* Rx in bytes, 512 - 16384 */, 512 /* Tx in bytes, 512 - 16384 */);
 	#endif
 
 	starStreamCallback();
-//	if (!Firebase.beginStream(stream, "/test/stream/data")) {
-//		Serial.printf("stream begin error, %s\n\n", stream.errorReason().c_str());
-//	}
-//
-//	Firebase.setStreamCallback(stream, streamCallback, streamTimeoutCallback);
-//
-//	Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
 }
 
 //TODO - Remover
@@ -102,26 +115,22 @@ void sendDataFirebase(){
 	bool firebaseOK = Firebase.ready();
 
 	if(getConnectionHealth() && !firebaseOK){
-		println("Firebase NOK **************");
 		stopStreamCallback();
 	}
 
 	if (getConnectionHealth() && (firebaseOK && (getMillis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))) {
+
 		println("<---------------------- Get Firebase ------------------------>");
 		Serial.printf("token.uid: %s -> email: %s -> password: %s", auth.token.uid.c_str(), auth.user.email.c_str(), auth.user.password.c_str());
 
 		delayMilliSeconds(1000);
 		sendDataPrevMillis = getMillis();
-		count++;
 		FirebaseJson json;
 		json.add("data", "hello");
-		json.add("num", count);
-//		Serial.printf("Set json... %s\n\n", Firebase.setJSON(fbdo, "/test/stream/data/json", json) ? "ok" : fbdo.errorReason().c_str());
+		json.add("num", ++count);
 
-		Serial.println("\n\nBefore send");
 
 		if(!Firebase.setJSON(fbdo, "/test/stream/data/json", json)){
-			println("\nErro send");
 			stopStreamCallback();
 			Serial.printf("\nSet json... %s\n\n", fbdo.errorReason().c_str());
 		}else{
