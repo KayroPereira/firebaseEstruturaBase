@@ -6,7 +6,7 @@
 #include "PingUtils.h"
 #include "importUtils.h"
 
-/*Define the WiFi credentials */
+/* 1. Define the WiFi credentials */
 #define WIFI_SSID "kWiFiMobile"
 #define WIFI_PASSWORD "123456789"
 // #define WIFI_SSID "NetWifi2"
@@ -19,7 +19,6 @@ extern void wifiInitialize();
 extern void connectWifi();
 extern void connectWifi(int maximum_attempt);
 extern bool pingOK();
-extern void setFlgsConnection(unsigned int value);
 extern bool getStationInitialized();
 extern void setStationInitialized(bool value);
 extern bool getStationConnected();

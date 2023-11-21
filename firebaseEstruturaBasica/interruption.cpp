@@ -2,14 +2,8 @@
 
 int regDelayPing;
 
-union{
-	struct{
-		unsigned int startPing: 1;
-		unsigned int flgRegDelayPing: 1;
-	}flgsInterruptionBits;
-
-	unsigned int flgsInterruption;
-}flgsInterruption;
+bool startPing = true;
+bool flgRegDelayPing = false;
 
 void timerInterrupt(){
 
@@ -17,6 +11,11 @@ void timerInterrupt(){
 		reloadRegDelayPing();
 	    setStartPing(true);
 	}
+
+//	if(getCheckHealthConnection() && getStartPing()){
+//		setStartPing(false);
+//		healthConnection();
+//	}
 }
 
 void timer1Configuration(){
@@ -30,24 +29,18 @@ void reloadRegDelayPing(){
 	regDelayPing = RELOAD_CONT;
 }
 
-//gets e sets
-
-void setFlgsInterruption(unsigned int value){
-	flgsInterruption.flgsInterruption = value;
-}
-
 bool getStartPing(){
-	return flgsInterruption.flgsInterruptionBits.startPing;
+	return startPing;
 }
 
 void setStartPing(bool value){
-	flgsInterruption.flgsInterruptionBits.startPing = value;
+	startPing = value;
 }
 
 bool getFlgRegDelayPing(){
-	return flgsInterruption.flgsInterruptionBits.flgRegDelayPing;
+	return flgRegDelayPing;
 }
 
 void setFlgRegDelayPing(bool value){
-	flgsInterruption.flgsInterruptionBits.flgRegDelayPing = value;
+	flgRegDelayPing = value;
 }

@@ -9,7 +9,6 @@ extern Pinger pinger;
 void pingerReceive();
 void pingerEnd();
 
-extern void setFlgsPingUtils(unsigned int value);
 extern void setPingBusy(bool value);
 extern bool getPingBusy();
 extern bool getStatusPing();

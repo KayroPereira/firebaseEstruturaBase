@@ -2,21 +2,16 @@
 
 unsigned long delayTryCommunication = getMillis();
 
-union{
-	struct{
-		unsigned int initializationOk: 1;
-		unsigned int connectionHealth: 1;
-		unsigned int checkHealthConnection: 1;
-		unsigned int flgFirstBootAttempt: 1;
-		unsigned int flgFirebaseConfigured: 1;
-	}flgsAccessHardwareBits;
-
-	unsigned int flgsAccessHardware;
-}flgsAccessHardware;
+//TODO - converter para flags
+bool initializationOk = false;
+bool connectionHealth = false;
+bool checkHealthConnection = false;
+bool flgFirstBootAttempt = false;
+bool flgFirebaseConfigured = false;
 
 void initializeHardware(){
 
-	flgsAccessHardware.flgsAccessHardware = 0;
+	println("-------------- initializeHardware ------------");
 
 	timer1Configuration();
 
@@ -25,14 +20,23 @@ void initializeHardware(){
 	pingerReceive();
 	pingerEnd();
 
-	flgsAccessHardware.flgsAccessHardwareBits.flgFirstBootAttempt = true;
+//	firebaseConfiguration();
+
+	flgFirstBootAttempt = true;
 
 	pinConfiguration(LED_BUILTIN, OUTPUT);
+
+//	wifiInitialize();
+//
+//	if(stationInitialized){
+//		connectWifi();
+//	}
 }
 
 void communicationBoot(){
 
 	if((getMillis() - delayTryCommunication) > DELAY_TRY_COMMUNICATION){
+		println("\n-------------- communicationBoot ------------");
 		delayTryCommunication = getMillis();
 	}else{
 		return;
@@ -43,26 +47,28 @@ void communicationBoot(){
 	}
 
 	if(getStationInitialized() && !getStationConnected()){
-		if(!flgsAccessHardware.flgsAccessHardwareBits.flgFirstBootAttempt){
+		if(!flgFirstBootAttempt){
 			connectWifi();
 		}else{
 			connectWifi(5);
 		}
 	}
 
-	if(getStationConnected() && !flgsAccessHardware.flgsAccessHardwareBits.connectionHealth){
-		startCheckHealthConnection();
-	}
-
-	flgsAccessHardware.flgsAccessHardwareBits.initializationOk = (getStationInitialized() && getStationConnected() && getConnectionHealth());
-
-	if(flgsAccessHardware.flgsAccessHardwareBits.initializationOk && !flgsAccessHardware.flgsAccessHardwareBits.flgFirebaseConfigured){
+	if(getStationConnected() && !connectionHealth){
 
 		systemInformation();
 
-		firebaseConfiguration();
-		flgsAccessHardware.flgsAccessHardwareBits.flgFirebaseConfigured = true;
+		startCheckHealthConnection();
 	}
+
+	initializationOk = (getStationInitialized() && getStationConnected() && getConnectionHealth());
+
+	if(initializationOk && !flgFirebaseConfigured){
+		firebaseConfiguration();
+		flgFirebaseConfigured = true;
+	}
+
+	Serial.printf("\ninitializationOk: %s\n", initializationOk ? "true" : "false");
 }
 
 void systemInformation(){
@@ -78,6 +84,7 @@ void systemInformation(){
 
 void startCheckHealthConnection(){
 	if(!getFlgRegDelayPing()){
+		println("-------------- startCheckHealthConnection ------------");
 		reloadRegDelayPing();
 		setFlgRegDelayPing(true);
 		setCheckHealthConnection(true);
@@ -85,21 +92,44 @@ void startCheckHealthConnection(){
 }
 
 void stopCheckHealthConnection(){
+	println("-------------- stopCheckHealthConnection ------------");
 	setFlgRegDelayPing(false);
 	setCheckHealthConnection(false);
 	reloadRegDelayPing();
 }
 
+//TODO - Remover
+int contPing = 0;
+
 void healthConnection(){
+
+	if(contPing % 10 == 0)
+		println("\n-------------- healthConnection ------------");
+
+	if(getStateChange()){
+		print("Ping ok: ");
+		print((getStatusPing() ? "true -> " : "false -> "));
+		println(contPing++);
+		print("stateChange ok: ");
+		println((getStateChange() ? "true -> " : "false -> "));
+	}
 
 	if(getStateChange() && getStatusPing()){
 		setConnectionHealth(true);
 		setStateChange(false);
 
-		starStreamCallback();
+		//TODO - Verificar necessidade
+//		firebaseConfiguration();
+
+//		beginStreamCallback();
 	}else if(getStateChange() && !getStatusPing()){
 		setConnectionHealth(false);
 		setStateChange(false);
+//		removeStreamCallback();
+	}
+
+	if(getStateChange()){
+		Serial.printf("\n\n getPingBusy: %s -> getConnectionHealth: %s\n", getPingBusy() ? "true" : "false", getConnectionHealth() ? "true" : "false");
 	}
 
 	if(!getPingBusy() && !getConnectionHealth()){
@@ -159,12 +189,8 @@ unsigned long getMillis(){
 
 //gets e sets
 
-void setFlgsAccessHardware(unsigned int value){
-	flgsAccessHardware.flgsAccessHardware = value;
-}
-
 void setConnectionHealth(bool value){
-	flgsAccessHardware.flgsAccessHardwareBits.connectionHealth = value;
+	connectionHealth = value;
 
 	if(!value){
 		startCheckHealthConnection();
@@ -174,21 +200,21 @@ void setConnectionHealth(bool value){
 }
 
 bool getConnectionHealth(){
-	return flgsAccessHardware.flgsAccessHardwareBits.connectionHealth;
+	return connectionHealth;
 }
 
 bool getCheckHealthConnection(){
-	return flgsAccessHardware.flgsAccessHardwareBits.checkHealthConnection;
+	return checkHealthConnection;
 }
 
 void setCheckHealthConnection(bool value){
-	flgsAccessHardware.flgsAccessHardwareBits.checkHealthConnection = value;
+	checkHealthConnection = value;
 }
 
 bool getInitializationOk(){
-	return flgsAccessHardware.flgsAccessHardwareBits.initializationOk;
+	return initializationOk;
 }
 
 void setInitializationOk(bool value){
-	flgsAccessHardware.flgsAccessHardwareBits.initializationOk = value;
+	initializationOk = value;
 }
