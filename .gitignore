@@ -3,4 +3,4 @@
 # Arquivos de configuração do Eclipse
 .settings/
 
-/firebaseEstruturaBasica/firebaseFunctions.h
+/firebaseEstruturaBasica/header/firebaseFunctions.h
