@@ -1,7 +1,11 @@
 #include "testWiFiPingV1.h"
 
 void variableInitialize(){
-	println("-------------- variableInitialize ------------");
+	setFlgsAccessHardware(0);
+	setFlgsPingUtils(0);
+	setFlgsConnection(0);
+	setFlgsInterruption(0);
+
 	setConnectionHealth(false);
 	reloadRegDelayPing();
 }
@@ -12,8 +16,8 @@ void setup(){
 	serialInitialize(115200);
 	println("\n\nInicializando....");
 
-	initializeHardware();
 	variableInitialize();
+	initializeHardware();
 
 	delayMilliSeconds(2000);
 }
@@ -22,19 +26,18 @@ long sendDataPrevMillis1 = getMillis();
 
 void loop(){
 
+	if (getMillis() - sendDataPrevMillis1 > 100){
+		togglePin(LED_BUILTIN);
+		sendDataPrevMillis1 = getMillis();
+	}
+
 	if(!getInitializationOk()){
 		communicationBoot();
 	}else{
-		if (getMillis() - sendDataPrevMillis1 > 100){
-			togglePin(LED_BUILTIN);
-			sendDataPrevMillis1 = getMillis();
-		}
 
 		if(!getConnectionHealth()){
 			startCheckHealthConnection();
 		}else{
-
-
 			sendDataFirebase();
 		}
 	}

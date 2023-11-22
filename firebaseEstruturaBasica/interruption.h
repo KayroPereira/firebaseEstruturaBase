@@ -17,6 +17,7 @@ extern bool getStartPing();
 extern void setStartPing(bool value);
 extern bool getFlgRegDelayPing();
 extern void setFlgRegDelayPing(bool value);
+extern void setFlgsInterruption(unsigned int value);
 
 //accessHardware
 extern bool getCheckHealthConnection();

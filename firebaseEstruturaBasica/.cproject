@@ -20,10 +20,8 @@
 							<tool commandLinePattern="${recipe.cpp.o.pattern.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${recipe.cpp.o.pattern.2} -o ${OUTPUT} ${recipe.cpp.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.cpp.compile} ${sloeber.extra.all}-fmax-include-depth=10000" id="io.sloeber.tool.sketch.compiler.cpp.1833053483" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.1248270645" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/header}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/source}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SDFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/ESP8266-ping/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SdFat_-_Adafruit_Fork/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SPI}&quot;"/>
@@ -37,10 +35,8 @@
 							<tool commandLinePattern="${recipe.c.o.pattern.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${recipe.c.o.pattern.2} -o ${OUTPUT} ${recipe.c.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.c.compile} ${sloeber.extra.all}-fmax-include-depth=10000" id="io.sloeber.tool.compiler.c.2119962100" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.1566654776" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/header}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/source}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SDFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/ESP8266-ping/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SdFat_-_Adafruit_Fork/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SPI}&quot;"/>
@@ -54,10 +50,8 @@
 							<tool commandLinePattern="${recipe.S.o.pattern.1} ${FLAGS}  ${INPUTS} ${recipe.S.o.pattern.2} -o ${OUTPUT} ${recipe.S.o.pattern.3}  ${sloeber.extra.assembly} ${sloeber.extra.all}-fmax-include-depth=10000" id="io.sloeber.tool.sketch.compiler.s.1005665210" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.1127445608" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/header}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/source}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SDFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/ESP8266-ping/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SdFat_-_Adafruit_Fork/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/firebaseEstruturaBasica/libraries/SPI}&quot;"/>
